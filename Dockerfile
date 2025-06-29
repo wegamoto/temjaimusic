@@ -12,5 +12,5 @@ COPY . .
 EXPOSE 8080
 
 # Run the jar
-CMD ["java", "-jar", "target/temjaimusic-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]
 
