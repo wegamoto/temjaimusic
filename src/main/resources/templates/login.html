@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const supabase = supabase.createClient('https://<your-project>.supabase.co', '<public-anon-key>');
+
+        async function loginUser() {
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) {
+            alert('Login Failed: ' + error.message);
+          } else {
+            const token = data.session.access_token;
+            // ส่ง token ไป Spring Boot
+            await fetch('/api/auth/verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            alert('Login Success');
+          }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="bg-white p-8 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+    <input id="email" type="email" placeholder="Email" class="w-full p-2 mb-4 border border-gray-300 rounded" />
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 mb-4 border border-gray-300 rounded" />
+    <button onclick="loginUser()" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+        Login
+    </button>
+</div>
+</body>
+</html>
