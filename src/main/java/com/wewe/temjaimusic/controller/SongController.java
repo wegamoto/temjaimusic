@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -109,58 +110,112 @@ public class SongController {
                              @RequestParam("mp3File") MultipartFile mp3File,
                              Model model) {
         try {
-            // ✅ จัดการ tags
-            if (rawTags != null && !rawTags.trim().isEmpty()) {
-                List<String> tags = Arrays.stream(rawTags.split(","))
-                        .map(String::trim)
-                        .filter(s -> !s.isEmpty())
-                        .toList();
-                song.setTags(tags);
-            }
+            processTags(song, rawTags);
 
-            // ✅ อัปโหลดไฟล์ MP3 ไปยัง Supabase
             if (mp3File != null && !mp3File.isEmpty()) {
-                String fileName = "uploads/" + UUID.randomUUID() + "-" + mp3File.getOriginalFilename();
-
-                // ✅ ต้องไม่มี "public" ตรง URL PUT
-                String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.valueOf("audio/mpeg")); // ✅ ใช้ MIME type mp3
-                headers.set("x-upsert", "true");
-                headers.set("cache-control", "public, max-age=31536000");  // เพื่อให้ browser cache และรู้ว่าเล่นได้
-
-                headers.set("Authorization", "Bearer " + supabaseApiKey);
-                headers.set("x-upsert", "true");
-
-                HttpEntity<byte[]> requestEntity = new HttpEntity<>(mp3File.getBytes(), headers);
-                RestTemplate restTemplate = new RestTemplate();
-
-                ResponseEntity<String> response = restTemplate.exchange(
-                        uploadUrl,
-                        HttpMethod.PUT,
-                        requestEntity,
-                        String.class
-                );
-
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    // ✅ ใช้ public URL สำหรับแสดงผล
-                    String publicUrl = supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
-                    song.setMp3Url(publicUrl);
-                } else {
-                    throw new RuntimeException("Supabase upload failed: " + response.getBody());
-                }
+                String mp3Url = uploadToSupabase(mp3File);
+                song.setMp3Url(mp3Url);
             }
 
             songRepository.save(song);
+            return "redirect:/songs";
         } catch (Exception e) {
             model.addAttribute("error", "เกิดข้อผิดพลาด: " + e.getMessage());
             e.printStackTrace();
             return "add-song";
         }
-
-        return "redirect:/songs";
     }
+
+    private String uploadToSupabase(MultipartFile file) throws IOException {
+        String fileName = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("audio/mpeg"));
+        headers.set("Authorization", "Bearer " + supabaseApiKey);
+        headers.set("x-upsert", "true");
+        headers.set("cache-control", "public, max-age=31536000");
+
+        HttpEntity<byte[]> request = new HttpEntity<>(file.getBytes(), headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.exchange(uploadUrl, HttpMethod.PUT, request, String.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Supabase upload failed: " + response.getBody());
+        }
+
+        return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
+    }
+
+    private void processTags(Song song, String rawTags) {
+        if (rawTags != null && !rawTags.trim().isEmpty()) {
+            List<String> tags = Arrays.stream(rawTags.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            song.setTags(tags);
+        }
+    }
+
+//    @PostMapping
+//    public String addNewSong(@ModelAttribute Song song,
+//                             @RequestParam(name = "rawTags", required = false) String rawTags,
+//                             @RequestParam("mp3File") MultipartFile mp3File,
+//                             Model model) {
+//        try {
+//            // ✅ จัดการ tags
+//            if (rawTags != null && !rawTags.trim().isEmpty()) {
+//                List<String> tags = Arrays.stream(rawTags.split(","))
+//                        .map(String::trim)
+//                        .filter(s -> !s.isEmpty())
+//                        .toList();
+//                song.setTags(tags);
+//            }
+//
+//            // ✅ อัปโหลดไฟล์ MP3 ไปยัง Supabase
+//            if (mp3File != null && !mp3File.isEmpty()) {
+//                String fileName = "uploads/" + UUID.randomUUID() + "-" + mp3File.getOriginalFilename();
+//
+//                // ✅ ต้องไม่มี "public" ตรง URL PUT
+//                String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
+//
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.setContentType(MediaType.valueOf("audio/mpeg")); // ✅ ใช้ MIME type mp3
+//                headers.set("x-upsert", "true");
+//                headers.set("cache-control", "public, max-age=31536000");  // เพื่อให้ browser cache และรู้ว่าเล่นได้
+//
+//                headers.set("Authorization", "Bearer " + supabaseApiKey);
+//                headers.set("x-upsert", "true");
+//
+//                HttpEntity<byte[]> requestEntity = new HttpEntity<>(mp3File.getBytes(), headers);
+//                RestTemplate restTemplate = new RestTemplate();
+//
+//                ResponseEntity<String> response = restTemplate.exchange(
+//                        uploadUrl,
+//                        HttpMethod.PUT,
+//                        requestEntity,
+//                        String.class
+//                );
+//
+//                if (response.getStatusCode().is2xxSuccessful()) {
+//                    // ✅ ใช้ public URL สำหรับแสดงผล
+//                    String publicUrl = supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
+//                    song.setMp3Url(publicUrl);
+//                } else {
+//                    throw new RuntimeException("Supabase upload failed: " + response.getBody());
+//                }
+//            }
+//
+//            songRepository.save(song);
+//        } catch (Exception e) {
+//            model.addAttribute("error", "เกิดข้อผิดพลาด: " + e.getMessage());
+//            e.printStackTrace();
+//            return "add-song";
+//        }
+//
+//        return "redirect:/songs";
+//    }
 
     // รับข้อมูลจากฟอร์ม เพิ่มเพลงใหม่ (รองรับ tags ผ่าน rawTags)
 //    @PostMapping
