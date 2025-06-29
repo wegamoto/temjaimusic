@@ -86,9 +86,14 @@
                 </div>
 
                 <div class="mt-5 md:mt-0 flex flex-wrap gap-3 items-center">
-                    <audio controls th:if="${song.mp3Filename != null}"
-                           th:src="@{'/uploads/' + ${song.mp3Filename}}"
-                           class="h-10 max-w-xs rounded shadow" preload="none"></audio>
+                    <audio controls
+                           th:if="${song.mp3Url != null}"
+                           th:src="${song.mp3Url}"
+                           type="audio/mpeg"
+                           class="h-10 max-w-xs rounded shadow"
+                           preload="none">
+                        Your browser does not support the audio element.
+                    </audio>
 
                     <a th:href="@{'/songs/' + ${song.id}}"
                        class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow">

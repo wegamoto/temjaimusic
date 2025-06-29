@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SUPABASE_APIKEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkY3BhaW5yanRodWx0dmV0cmlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTE3NTY4OCwiZXhwIjoyMDY2NzUxNjg4fQ.yRG1FT9gM1T15SVlJsuIjjxG-bYPl4dXH0RuaaDqWik

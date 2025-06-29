@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="th">
 <head>
-    <!-- Google AdSense -->
-    <script data-ad-client="ca-pub-2433635593676545" async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 
     <meta charset="UTF-8" />
     <title th:text="${song.title} + ' - ' + ${song.artist} + ' | TemjaiMusic'">ชื่อเพลง - ศิลปิน | TemjaiMusic</title>
@@ -16,6 +14,10 @@
             font-family: 'Noto Sans Thai', sans-serif;
         }
     </style>
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-2433635593676545" async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen">
@@ -68,8 +70,9 @@
         <div class="my-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">🔊 ตัวอย่างเพลง</h3>
             <audio controls
-                   th:if="${song.mp3Filename != null}"
-                   th:src="@{'/uploads/' + ${song.mp3Filename}}"
+                   th:if="${song.mp3Url != null}"
+                   th:src="${song.mp3Url}"
+                   type="audio/mpeg"
                    class="w-full max-w-2xl rounded-lg shadow-lg border border-gray-200"
                    preload="none">
                 เบราว์เซอร์ของคุณไม่รองรับเครื่องเล่นเสียง
