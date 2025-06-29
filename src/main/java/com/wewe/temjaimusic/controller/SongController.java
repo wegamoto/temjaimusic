@@ -26,7 +26,7 @@ public class SongController {
 
     private final SongRepository songRepository;
 
-    @Value("${supabase.url:https://fallback-url.com}")
+    @Value("${supabase.url:https://fdcpainrjthultvetriq.supabase.co}")
     private String supabaseUrl;
 
     @Value("${supabase.apikey:defaultApiKeyIfMissing}")
