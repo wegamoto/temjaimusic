@@ -1,11 +1,16 @@
+# Use an official OpenJDK image
 FROM eclipse-temurin:24-jdk-alpine
 
+# Set work directory
 WORKDIR /app
 
-# ใช้ wildcard เพื่อครอบคลุมชื่อ jar ที่เปลี่ยนได้
-COPY target/*.jar temjaimusic.jar
+# Copy the jar file
+# COPY target/temjaimusic-0.0.1-SNAPSHOT.jar app.jar
+COPY . .
 
+# Expose port (use environment variable from Railway)
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "temjaimusic.jar"]
+# Run the jar
+ENTRYPOINT ["java", "-jar", "target/*.jar"]
 
