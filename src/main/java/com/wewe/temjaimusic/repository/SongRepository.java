@@ -1,6 +1,8 @@
 package com.wewe.temjaimusic.repository;
 
 import com.wewe.temjaimusic.model.Song;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +17,8 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     @Query("SELECT s FROM Song s JOIN s.tags t WHERE t LIKE %:tag%")
     List<Song> findByTag(@Param("tag") String tag);
+
+    Page<Song> findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCase(String title, String artist, Pageable pageable);
+
 }
 
