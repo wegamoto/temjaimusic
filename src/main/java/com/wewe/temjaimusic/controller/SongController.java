@@ -29,13 +29,13 @@ public class SongController {
 
     private final SongRepository songRepository;
 
-    @Value("${supabase.url:https://fdcpainrjthultvetriq.supabase.co}")
-    private String supabaseUrl;
-
-    @Value("${supabase.apikey:defaultApiKeyIfMissing}")
+    @Value("${supabase.api.key:DEFAULT_SUPABASE_API_KEY}")
     private String supabaseApiKey;
 
-    @Value("${supabase.bucket:temjaimusic}")
+    @Value("${supabase.url:https://default.supabase.co}")
+    private String supabaseUrl;
+
+    @Value("${supabase.bucket:default-bucket}")
     private String bucketName;
 
     @Autowired
@@ -135,9 +135,11 @@ public class SongController {
 
         String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
+        System.out.println("Supabase API Key: " + supabaseApiKey); // ต้องไม่เป็น null
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("audio/mpeg"));
-        headers.set("Authorization", "Bearer " + supabaseApiKey);
+        headers.set("Authorization", "Bearer " + supabaseApiKey);  // ✅ ต้องเป็น JWT จริงๆ
         headers.set("x-upsert", "true");
         headers.set("cache-control", "public, max-age=31536000");
 
