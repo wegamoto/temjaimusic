@@ -8,7 +8,6 @@
     <title>TemjaiMusic - รายการเพลง</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- ฟอนต์ภาษาไทย -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet" />
     <style>
         body {
@@ -24,28 +23,20 @@
     <aside class="w-full lg:w-1/6 hidden lg:block p-4">
         <div class="bg-yellow-100 p-4 rounded-xl shadow text-sm text-center">
             <p class="font-bold text-yellow-800 mb-2">🎯 โฆษณา</p>
-
-            <!-- โฆษณา Google AdSense -->
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2433635593676545"
-                    crossorigin="anonymous"></script>
-            <!-- sidebar_v001 -->
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-2433635593676545"
                  data-ad-slot="6779833598"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             <p class="text-yellow-700 mt-2">โฆษณาพิเศษสำหรับคุณ</p>
         </div>
     </aside>
 
     <!-- เนื้อหาเพลง -->
     <main class="w-full lg:flex-1 p-4 max-w-5xl mx-auto">
-    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-10 drop-shadow-sm">🎵 TemjaiMusic - รายการเพลง</h1>
+        <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-10 drop-shadow-sm">🎵 TemjaiMusic - รายการเพลง</h1>
 
         <!-- ฟอร์มค้นหา -->
         <form action="#" method="get" class="mb-8 flex flex-col md:flex-row items-stretch gap-3">
@@ -69,10 +60,41 @@
             </a>
         </div>
 
-        <!-- Playlist player ซ่อนอยู่ -->
+        <!-- ควบคุมเพลง -->
+        <div class="bg-gray-900 text-white px-6 py-4 rounded-2xl flex justify-center items-center gap-6 shadow-lg w-full mt-6">
+            <button onclick="toggleShuffle()" id="shuffleBtn" title="สุ่มเพลง">
+                <svg class="w-6 h-6 opacity-50 hover:opacity-100 transition" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 4l16 16M20 4h-6M4 20h6M15 9l5-5M15 15l5 5"></path>
+                </svg>
+            </button>
+            <button onclick="playPrevious()" title="เพลงก่อนหน้า">
+                <svg class="w-6 h-6 hover:text-blue-400 transition" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M11 5.882v8.235L5 10l6-4.118zM13 5h2v10h-2V5z" />
+                </svg>
+            </button>
+            <button onclick="togglePlay()" title="เล่น / หยุด">
+                <svg id="playIcon" class="w-8 h-8 hover:text-green-400 transition" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6 4l10 6-10 6V4z" />
+                </svg>
+            </button>
+            <button onclick="playNext()" title="เพลงถัดไป">
+                <svg class="w-6 h-6 hover:text-blue-400 transition" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 5.882v8.235L15 10l-6-4.118zM7 5h-2v10h2V5z" />
+                </svg>
+            </button>
+            <button onclick="toggleRepeat()" id="repeatBtn" title="เล่นซ้ำ">
+                <svg class="w-6 h-6 opacity-50 hover:opacity-100 transition" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 4v6h6M20 20v-6h-6M4 20h16M20 4H4"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Player (ซ่อนตอนเริ่ม) -->
         <audio id="playlistPlayer" controls class="w-full hidden mt-4"></audio>
 
-        <!-- เพิ่มช่องว่างอีก 1 แถว -->
+        <!-- ช่องว่างเพิ่มเติม -->
         <div class="h-6"></div>
 
         <!-- รายการเพลง -->
@@ -83,11 +105,7 @@
                 <div class="flex-1">
                     <h2 class="text-2xl font-semibold text-gray-900 mb-1" th:text="${song.title}">ชื่อเพลง</h2>
                     <p class="text-gray-700 text-lg mb-2" th:text="${song.artist}">ชื่อศิลปิน</p>
-
-                    <!-- แนวเพลง -->
                     <p class="text-sm text-pink-600 font-medium" th:if="${song.genre}" th:text="'แนวเพลง: ' + ${song.genre}"></p>
-
-                    <!-- แท็ก -->
                     <div class="flex flex-wrap gap-2 mt-3" th:if="${song.tags}">
                         <span th:each="tag : ${song.tags}"
                               class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full shadow-sm"
@@ -113,7 +131,6 @@
             </div>
         </div>
 
-        <!-- แสดงข้อความถ้าไม่พบเพลง -->
         <div th:if="${songs.size() == 0}"
              class="text-center text-gray-600 bg-yellow-50 p-6 rounded-2xl border border-yellow-300 mt-10 shadow">
             <p class="text-xl font-medium mb-2">ไม่พบเพลงที่คุณค้นหา</p>
@@ -126,39 +143,31 @@
     <aside class="w-1/6 hidden lg:block p-4">
         <div class="bg-yellow-100 p-4 rounded-xl shadow text-sm text-center">
             <p class="font-bold text-yellow-800 mb-2">💡 แนะนำ</p>
-
-            <!-- โฆษณา Google AdSense -->
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2433635593676545"
-                    crossorigin="anonymous"></script>
-            <!-- sidebar_v001 -->
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-2433635593676545"
                  data-ad-slot="6779833598"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             <p class="text-yellow-700 mt-2">ฟังเพลงใหม่ก่อนใคร!</p>
         </div>
     </aside>
 
 </div>
 
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    lucide.createIcons();
-</script>
-
+<!-- Scripts -->
 <script>
     let playlist = [];
     let currentTrackIndex = 0;
-    const player = document.getElementById("playlistPlayer");
+    let isShuffle = false;
+    let isRepeat = false;
 
-    // รวบรวม mp3 URLs ทั้งหมดจากหน้า
+    const player = document.getElementById("playlistPlayer");
+    const playIcon = document.getElementById("playIcon");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const repeatBtn = document.getElementById("repeatBtn");
+
     function buildPlaylist() {
         playlist = Array.from(document.querySelectorAll("audio"))
             .map(a => a.src)
@@ -167,27 +176,64 @@
 
     function playPlaylist() {
         buildPlaylist();
-        if (playlist.length === 0) {
-            alert("ไม่มีเพลงให้เล่น");
-            return;
-        }
+        if (playlist.length === 0) return alert("ไม่มีเพลงให้เล่น");
         currentTrackIndex = 0;
         player.src = playlist[currentTrackIndex];
         player.classList.remove("hidden");
         player.play();
     }
 
-    // เมื่อเพลงจบ ให้เล่นเพลงถัดไป
+    function playNext() {
+        if (isShuffle) {
+            currentTrackIndex = Math.floor(Math.random() * playlist.length);
+        } else {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+        }
+        player.src = playlist[currentTrackIndex];
+        player.play();
+    }
+
+    function playPrevious() {
+        currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+        player.src = playlist[currentTrackIndex];
+        player.play();
+    }
+
+    function togglePlay() {
+    // ถ้ายังไม่ได้เริ่มเล่นอะไรเลย
+    if (!player.src || player.src === window.location.href) {
+        playPlaylist();
+        playIcon.innerHTML = '<path d="M6 4h4v12H6zM10 4h4v12h-4z"/>'; // เปลี่ยนเป็น pause icon
+        return;
+    }
+
+    // toggle เล่น/หยุด
+    if (player.paused) {
+        player.play();
+        playIcon.innerHTML = '<path d="M6 4h4v12H6zM10 4h4v12h-4z"/>'; // pause icon
+    } else {
+        player.pause();
+        playIcon.innerHTML = '<path d="M6 4l10 6-10 6V4z"/>'; // play icon
+    }
+}
+
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        shuffleBtn.classList.toggle("text-yellow-400", isShuffle);
+    }
+
+    function toggleRepeat() {
+        isRepeat = !isRepeat;
+        repeatBtn.classList.toggle("text-green-400", isRepeat);
+    }
+
     player.addEventListener("ended", () => {
-        currentTrackIndex++;
-        if (currentTrackIndex < playlist.length) {
-            player.src = playlist[currentTrackIndex];
+        if (isRepeat) {
             player.play();
         } else {
-            player.classList.add("hidden");
+            playNext();
         }
     });
 </script>
-
 </body>
 </html>
