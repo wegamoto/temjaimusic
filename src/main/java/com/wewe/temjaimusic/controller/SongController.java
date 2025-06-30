@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -127,8 +129,11 @@ public class SongController {
     }
 
     private String uploadToSupabase(MultipartFile file) throws IOException {
-        String fileName = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
-        String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
+        // ใช้ UUID และ timestamp เพื่อให้ไม่ซ้ำกัน
+        String safeFileName = UUID.randomUUID() + ".mp3";  // ไม่ใช้ชื่อเดิม
+        String filePath = "uploads/" + safeFileName;
+
+        String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("audio/mpeg"));
@@ -145,7 +150,8 @@ public class SongController {
             throw new RuntimeException("Supabase upload failed: " + response.getBody());
         }
 
-        return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
+        // Return public URL (if bucket is public)
+        return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + filePath;
     }
 
     private void processTags(Song song, String rawTags) {
