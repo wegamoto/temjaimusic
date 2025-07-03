@@ -53,8 +53,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-2xl shadow hover:bg-blue-600 transition">ค้นหา</button>
         </form>
 
-
-
         <div class="mb-12 flex justify-end gap-4 flex-wrap">
             <button onclick="playPlaylist()" class="bg-indigo-500 text-white px-6 py-3 rounded-2xl shadow hover:bg-indigo-600 transition">▶️ เล่นทั้งหมด</button>
             <a href="/songs/new" class="inline-block bg-green-500 text-white px-5 py-3 rounded-2xl shadow hover:bg-green-600 transition">+ เพิ่มเพลงใหม่</a>
@@ -105,6 +103,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </div>
+
+        <div class="flex justify-center mt-10" th:if="${totalPages > 1}">
+            <ul class="inline-flex items-center space-x-1">
+                <li th:if="${currentPage > 0}">
+                    <a th:href="@{'/songs'(page=${currentPage - 1}, keyword=${keyword})}" class="px-3 py-2 rounded-l-lg bg-gray-700 hover:bg-blue-600 text-white">ก่อนหน้า</a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{'/songs'(page=${i}, keyword=${keyword})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? ' bg-blue-600 text-white' : ' bg-gray-700 hover:bg-gray-600 text-gray-200'" class="px-3 py-2 rounded"></a>
+                </li>
+                <li th:if="${currentPage < totalPages - 1}">
+                    <a th:href="@{'/songs'(page=${currentPage + 1}, keyword=${keyword})}" class="px-3 py-2 rounded-r-lg bg-gray-700 hover:bg-blue-600 text-white">ถัดไป</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 👇 แสดงหมายเลขหน้า -->
+        <div class="text-sm text-gray-300 mb-4 text-right" th:if="${totalPages > 1}">
+            หน้า <span class="text-white font-semibold" th:text="${currentPage + 1}">1</span> จาก <span class="text-white font-semibold" th:text="${totalPages}">1</span>
+        </div>
+
+
 
         <div class="grid gap-6" th:if="${songs.size() > 0}">
             <div th:each="song : ${songs}" class="bg-gray-800 rounded-3xl shadow-lg p-6 flex flex-col md:flex-row items-start md:items-center justify-between hover:shadow-xl transition-all duration-200">
