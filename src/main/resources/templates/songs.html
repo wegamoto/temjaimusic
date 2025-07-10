@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-adsense-account" content="ca-pub-2433635593676545">
+    <meta property="og:title" content="รักเธอที่สุด - ป้าง นครินทร์">
+    <meta property="og:description" content="ฟังเพลงรักเธอที่สุด โดย ป้าง นครินทร์ พร้อมเนื้อเพลง">
+    <meta property="og:image" content="https://temjaimusic.com/images/song123.jpg">
+    <meta property="og:url" content="https://temjaimusic.com/songs/123">
+
     <title>TemjaiMusic - รายการเพลง</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -121,18 +126,51 @@
 
         <!-- Song List -->
         <div class="grid gap-6" th:if="${songs.size() > 0}">
-            <div th:each="song : ${songs}" class="bg-gray-800 rounded-3xl shadow-lg p-6 flex flex-col md:flex-row items-start md:items-center justify-between hover:shadow-xl transition-all duration-200">
+            <div th:each="song : ${songs}"
+                 class="bg-gray-800 rounded-3xl shadow-lg p-6 flex flex-col md:flex-row items-start md:items-center justify-between hover:shadow-xl transition-all duration-200">
+
                 <div class="flex-1">
-                    <h2 class="text-2xl font-semibold text-white mb-1" th:text="${song.title}">ชื่อเพลง</h2>
+                    <h2 class="text-2xl font-semibold text-white mb-1">
+                        <a th:href="@{'/songs/' + ${song.id}}" class="hover:underline text-blue-400"
+                           th:text="${song.title}">ชื่อเพลง</a>
+                    </h2>
                     <p class="text-gray-300 text-lg mb-2" th:text="${song.artist}">ชื่อศิลปิน</p>
-                    <p class="text-sm text-pink-400 font-medium" th:if="${song.genre}" th:text="'แนวเพลง: ' + ${song.genre}"></p>
+                    <p class="text-sm text-pink-400 font-medium" th:if="${song.genre}"
+                       th:text="'แนวเพลง: ' + ${song.genre}"></p>
                     <div class="flex flex-wrap gap-2 mt-3" th:if="${song.tags}">
-                        <span th:each="tag : ${song.tags}" class="bg-blue-700 text-blue-100 text-xs px-3 py-1 rounded-full shadow-sm" th:text="${tag}">Tag</span>
+                        <span th:each="tag : ${song.tags}"
+                              class="bg-blue-700 text-blue-100 text-xs px-3 py-1 rounded-full shadow-sm"
+                              th:text="${tag}">Tag</span>
                     </div>
                 </div>
+                <div class="mt-5 md:mt-0 flex flex-wrap gap-6 items-center">
+                    <!-- กลุ่มเล่นเพลง + ดูเนื้อเพลง -->
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <audio controls th:if="${song.mp3Url != null}" th:src="${song.mp3Url}" type="audio/mpeg"
+                               class="h-10 max-w-xs rounded shadow" preload="none">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <a th:href="@{'/songs/' + ${song.id}}"
+                           class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow">
+                            🎤 ดูเนื้อเพลง
+                        </a>
+                    </div>
+                <!-- 🔗 ปุ่มแชร์เพลง -->
                 <div class="mt-5 md:mt-0 flex flex-wrap gap-3 items-center">
-                    <audio controls th:if="${song.mp3Url != null}" th:src="${song.mp3Url}" type="audio/mpeg" class="h-10 max-w-xs rounded shadow" preload="none">Your browser does not support the audio element.</audio>
-                    <a th:href="@{'/songs/' + ${song.id}}" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow">🎤 ดูเนื้อเพลง</a>
+                    <a th:href="'https://www.facebook.com/sharer/sharer.php?u=https://temjaimusic.com/songs/' + ${song.id}"
+                       target="_blank"
+                       class="bg-blue-700 text-white text-sm px-3 py-1 rounded-xl hover:bg-blue-800 transition shadow">📘
+                        แชร์</a>
+
+                    <a th:href="'https://twitter.com/intent/tweet?text=' + ${song.title} + ' โดย ' + ${song.artist} + ' ฟังได้ที่ https://temjaimusic.com/songs/' + ${song.id}"
+                       target="_blank"
+                       class="bg-blue-500 text-white text-sm px-3 py-1 rounded-xl hover:bg-blue-600 transition shadow">🐦
+                        แชร์</a>
+
+                    <a th:href="'https://social-plugins.line.me/lineit/share?url=https://temjaimusic.com/songs/' + ${song.id}"
+                       target="_blank"
+                       class="bg-green-600 text-white text-sm px-3 py-1 rounded-xl hover:bg-green-700 transition shadow">💬
+                        แชร์</a>
                 </div>
             </div>
         </div>
